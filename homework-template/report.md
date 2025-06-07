@@ -45,6 +45,65 @@
   - 當 k 過大時，(S / k) 過小造成單位區塊傳輸成本升高，反而變慢。
 
 ---
+## 程式實作
+
+請見各段程式碼區塊與註解：
+
+### 題目一：Min Heap
+
+```cpp
+template <class T>
+class MinHeap : public MinPQ<T> {
+private:
+    vector<T> heap;
+
+    void SiftUp(int index);
+    void SiftDown(int index);
+
+public:
+    MinHeap() {}
+    bool IsEmpty() const override;
+    const T& Top() const override;
+    void Push(const T& value) override;
+    void Pop() override;
+};
+```
+
+---
+
+### 題目二：BST 插入與刪除
+
+```cpp
+int main() {
+    vector<int> n_values = { 100, 500, ..., 10000 };
+    for (int n : n_values) {
+        BST bst;
+        for (int i = 0; i < n; ++i) {
+            bst.Insert(dist(rng));
+        }
+        int height = bst.GetHeight();
+        double log2n = log2(n);
+        double ratio = height / log2n;
+        ...
+    }
+}
+```
+
+---
+
+### 題目三：輸入時間模擬
+
+```cpp
+double calculateInputTime(int n, int S, int k, double ts, double tl, double tt) {
+    int m = n / S;
+    double log_k_m = log(m) / log(k);
+    int passes = ceil(log_k_m);
+    double block_time = ts + tl + tt * (S / k);
+    double total_blocks = (n / S) * k;
+    return passes * total_blocks * block_time;
+}
+```
+---
 
 ## 效能分析
 
@@ -110,62 +169,22 @@
 ![外部排序圖](https://github.com/user-attachments/assets/21aba3d4-e109-41bb-8750-cc4719d79ecd)
 ---
 
-## 程式實作
+## 申論及開發報告
 
-請見各段程式碼區塊與註解：
+### 題目一：
 
-### 題目一：Min Heap
+- 本題實作最小堆以滿足 `MinPQ` 抽象介面，強調資料封裝與虛擬函數的使用。
+- 使用 vector 作為底層資料結構，方便動態調整容量與快速查找。
 
-```cpp
-template <class T>
-class MinHeap : public MinPQ<T> {
-private:
-    vector<T> heap;
+### 題目二：
 
-    void SiftUp(int index);
-    void SiftDown(int index);
+- 高度實驗說明 BST 在隨機資料下表現近似平衡樹。
+- 刪除功能涵蓋三種典型情況，透過遞迴與取代機制確保 BST 結構完整性。
 
-public:
-    MinHeap() {}
-    bool IsEmpty() const override;
-    const T& Top() const override;
-    void Push(const T& value) override;
-    void Pop() override;
-};
-```
+### 題目三：
 
----
+- 模擬外部排序的 I/O 行為，針對 k-way merge 次數與每次讀取成本分析。
+- 實作展示不同 $k$ 值對輸入時間的影響，有助於未來系統參數調校。
+--
 
-### 題目二：BST 插入與刪除
 
-```cpp
-int main() {
-    vector<int> n_values = { 100, 500, ..., 10000 };
-    for (int n : n_values) {
-        BST bst;
-        for (int i = 0; i < n; ++i) {
-            bst.Insert(dist(rng));
-        }
-        int height = bst.GetHeight();
-        double log2n = log2(n);
-        double ratio = height / log2n;
-        ...
-    }
-}
-```
-
----
-
-### 題目三：輸入時間模擬
-
-```cpp
-double calculateInputTime(int n, int S, int k, double ts, double tl, double tt) {
-    int m = n / S;
-    double log_k_m = log(m) / log(k);
-    int passes = ceil(log_k_m);
-    double block_time = ts + tl + tt * (S / k);
-    double total_blocks = (n / S) * k;
-    return passes * total_blocks * block_time;
-}
-```
----
