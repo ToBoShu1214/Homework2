@@ -1,7 +1,48 @@
 
-# 41243217  
+# 41243217 
 # 41243222  
-JUN. 02 / 2025  
+# 資料結構作業二  
+# 日期：2025年6月7日
+
+---
+
+## 解題說明
+
+本次作業共包含三個題目，涵蓋堆積（Heap）、二元搜尋樹（Binary Search Tree）與外部排序的實作與分析。以下依題號分別說明設計原則與實作方式。
+
+### 題目一：最小堆積（Min Heap）實作說明
+
+- 定義一個抽象類別 `MinPQ`，作為 Priority Queue 接口。
+- 使用 `vector<T>` 來模擬一顆最小堆積。
+- 設計 `SiftUp` 與 `SiftDown` 輔助函數以維持堆積性質。
+- 所有操作：`Push()`、`Pop()`、`Top()` 時間複雜度為 $O(\log n)$。
+- 實作過程中考慮例外處理，例如當 `Top()` 與 `Pop()` 時堆為空的情況。
+
+### 題目二：BST 高度與刪除操作
+
+- 插入亂數節點至 BST 中，觀察其高度與 $\log_2(n)$ 的比值。
+- 設計遞迴函數計算高度，並重複試驗不同 n 值取得趨勢。
+- 刪除節點時考慮三種情況：葉節點、單子節點、雙子節點（使用右子樹最小值替代）。
+- 所有操作保持 BST 的結構與性質。
+
+### 題目三：外部排序解題說明
+
+- 題目要求計算多階段 k 路歸併所需的總輸入時間，因此需考慮：
+  - 資料筆數 `n`、
+  - 每個區塊大小 `S`、
+  - 磁碟搜尋時間 `ts`、
+  - 磁頭延遲時間 `tl`、
+  - 資料傳輸時間 `tt`。
+- 模擬公式為：  
+  ```
+  total_time = ceil(log_k(m)) × m × (ts + tl + tt × (S / k))
+  ```
+  其中 m 為初始區塊數 `n/S`，log_k(m) 為總合併階段數。
+- 程式設計上，使用 `log()` 換底公式轉換 `log_k(m)` 為 `log(m) / log(k)`。
+- 為了測試不同 k 值的效能，寫迴圈進行多組輸出觀察趨勢。
+- 透過測試發現：
+  - 當 k 適中時（如 8 或 16），能有效減少 passes 數。
+  - 當 k 過大時，(S / k) 過小造成單位區塊傳輸成本升高，反而變慢。
 
 ---
 
@@ -67,31 +108,13 @@ JUN. 02 / 2025
 - 輸出輸入時間：
 
 ![外部排序圖](https://github.com/user-attachments/assets/21aba3d4-e109-41bb-8750-cc4719d79ecd)
-
----
-
-## 申論及開發報告
-
-### 題目一：
-
-- 本題實作最小堆以滿足 `MinPQ` 抽象介面，強調資料封裝與虛擬函數的使用。
-- 使用 vector 作為底層資料結構，方便動態調整容量與快速查找。
-
-### 題目二：
-
-- 高度實驗說明 BST 在隨機資料下表現近似平衡樹。
-- 刪除功能涵蓋三種典型情況，透過遞迴與取代機制確保 BST 結構完整性。
-
-### 題目三：
-
-- 模擬外部排序的 I/O 行為，針對 k-way merge 次數與每次讀取成本分析。
-- 實作展示不同 $k$ 值對輸入時間的影響，有助於未來系統參數調校。
-
 ---
 
 ## 程式實作
 
-### 題目一：最小堆實作 (`MinHeap`)
+請見各段程式碼區塊與註解：
+
+### 題目一：Min Heap
 
 ```cpp
 template <class T>
@@ -113,7 +136,7 @@ public:
 
 ---
 
-### 題目二：(a) BST 高度分析主程式
+### 題目二：BST 插入與刪除
 
 ```cpp
 int main() {
@@ -133,30 +156,7 @@ int main() {
 
 ---
 
-### 題目二：(b) BST 刪除功能
-
-```cpp
-Node* Delete(Node* node, int key) {
-    if (!node) return nullptr;
-    if (key < node->value) ...
-    else if (key > node->value) ...
-    else {
-        if (!node->left && !node->right) ...
-        else if (!node->left) ...
-        else if (!node->right) ...
-        else {
-            Node* successor = FindMin(node->right);
-            node->value = successor->value;
-            node->right = Delete(node->right, successor->value);
-        }
-    }
-    return node;
-}
-```
-
----
-
-### 題目三：外部排序時間計算
+### 題目三：輸入時間模擬
 
 ```cpp
 double calculateInputTime(int n, int S, int k, double ts, double tl, double tt) {
@@ -168,5 +168,4 @@ double calculateInputTime(int n, int S, int k, double ts, double tl, double tt) 
     return passes * total_blocks * block_time;
 }
 ```
-
 ---
